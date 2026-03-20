@@ -6,7 +6,10 @@
 <title>Siddhnath Car Care</title>
 <meta name="theme-color" content="#0b0d14">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SCC Billing">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="SCC Billing">
 <link rel="manifest" id="pwa-manifest">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -265,6 +268,62 @@ input.ok{border-color:var(--green)!important}
   .btr.grand span:last-child{color:#16a34a}
   .bm-item .bv{color:#111}.bdoc-foot{color:#777}
 }
+/* ── PWA Install Banner ── */
+.install-bar{background:linear-gradient(135deg,#1c2030,#13161f);border:1px solid var(--ac);border-radius:var(--r2);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.install-bar-icon{font-size:24px;flex-shrink:0}
+.install-bar-text{flex:1;min-width:0}
+.install-bar-text strong{display:block;font-size:13px;color:var(--ac);font-weight:700}
+.install-bar-text span{font-size:11px;color:var(--t2)}
+.install-bar-btn{background:var(--ac);color:#fff;border:none;border-radius:var(--r);padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+/* Install Guide Modal */
+.install-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center}
+.install-modal.show{display:flex}
+.install-sheet{background:var(--s1);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:500px;border-top:3px solid var(--ac)}
+.install-sheet h3{font-size:16px;font-weight:700;color:var(--text);margin:0 0 4px}
+.install-sheet p{font-size:12px;color:var(--t2);margin:0 0 18px}
+.install-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.install-step-num{width:26px;height:26px;border-radius:50%;background:var(--ac);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.install-step-txt{font-size:13px;color:var(--text);line-height:1.5}
+.install-step-txt strong{color:var(--ac)}
+.install-close-btn{width:100%;background:var(--s3);border:1px solid var(--bd);color:var(--t2);border-radius:var(--r);padding:12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px}
+
+/* ── Light Theme ── */
+html[data-theme="light"],
+[data-theme="light"]{
+  --bg:#f4f6fb;--s1:#ffffff;--s2:#eef0f6;--s3:#e2e5ef;
+  --bd:#cdd2e0;--bd2:#b8bfd0;
+  --ac:#f97316;
+  --text:#1a1c2a;--t2:#4a5068;--t3:#8890a8;
+  --green:#16a34a;--gbg:rgba(22,163,74,.12);
+  --red:#dc2626;--rbg:rgba(220,38,38,.12);
+  --blue:#2563eb;
+  --amber:#d97706;
+}
+[data-theme="light"] body{background:#f4f6fb;color:#1a1c2a}
+[data-theme="light"] .hdr{background:#fff;border-bottom:2px solid var(--ac)}
+[data-theme="light"] .screen{background:#f4f6fb}
+[data-theme="light"] .bill-card{background:#fff;border-color:#cdd2e0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+[data-theme="light"] .bkp-bar{background:#fff;border-color:#cdd2e0}
+[data-theme="light"] .stats{background:#fff;border:1px solid #cdd2e0;border-radius:12px}
+[data-theme="light"] .bdoc-hdr{background:#f0f2f8}
+[data-theme="light"] .bdoc-nm{color:#f97316}
+[data-theme="light"] .btbl th{background:#1c2030;color:#fff}
+[data-theme="light"] .bm-item .bv{color:#111}
+[data-theme="light"] .bdoc-foot{color:#555}
+[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:#fff;border-color:#cdd2e0;color:#1a1c2a}
+[data-theme="light"] .htab{background:#fff;border-color:#cdd2e0;color:#4a5068}
+[data-theme="light"] .pay-modal-inner{background:#fff}
+[data-theme="light"] .pay-opt{background:#f4f6fb;border-color:#cdd2e0}
+[data-theme="light"] .drive-banner{background:#fff;border-color:#cdd2e0}
+[data-theme="light"] .install-bar{background:#fff;border-color:var(--ac)}
+
+/* ── Theme Toggle Button ── */
+.theme-btn{background:var(--s2);border:1px solid var(--bd2);color:var(--text);border-radius:var(--r);padding:6px 9px;font-size:16px;cursor:pointer;flex-shrink:0;line-height:1}
+
+/* ── Delete Bill Button ── */
+.btn-danger{background:var(--rbg);border:1px solid var(--red);color:var(--red);border-radius:var(--r);padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;width:100%;font-family:var(--font)}
+.btn-danger:hover{background:var(--red);color:#fff}
+
 </style>
 </head>
 <body>
@@ -276,12 +335,24 @@ input.ok{border-color:var(--green)!important}
     <button class="htab" id="tab-paid" onclick="switchTab('paid')" data-i18n="paid">Paid</button>
     <button class="htab" id="tab-search" onclick="switchTab('search')">&#128269; Search</button>
   </div>
+  <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">&#9788;</button>
   <button class="lang-btn" onclick="toggleLang()" id="lang-btn">&#2350;&#2352;&#2366;&#2336;&#2368;</button>
   <button class="btn-new" onclick="startNew()" data-i18n="newBill">+ New Bill</button>
 </div>
 
 <!-- DASHBOARD -->
 <div class="screen active" id="screen-home">
+  <!-- PWA Install Banner -->
+  <div class="install-bar" id="install-bar" style="display:none">
+    <div class="install-bar-icon">📲</div>
+    <div class="install-bar-text">
+      <strong>Install App on Phone</strong>
+      <span>Use offline, works like a real app</span>
+    </div>
+    <button class="install-bar-btn" onclick="triggerInstall()">Install</button>
+    <button onclick="hideInstallBar(true)" style="background:none;border:none;color:var(--t2);font-size:18px;cursor:pointer;padding:4px 6px;line-height:1;flex-shrink:0">&times;</button>
+  </div>
+
   <div class="bkp-bar">
     <p><strong data-i18n="billsOnDevice">&#128190; Bills saved on this device.</strong> <span data-i18n="connectDrive">Connect Drive to share invoices as links.</span></p>
     <div class="bkp-btns">
@@ -1247,14 +1318,16 @@ function showView(){
     html='<button class="btn btn-success btn-full" onclick="shareInvoiceWA()">'+WA_ICO+' Send Invoice on WhatsApp</button>'
       +'<button class="btn btn-blue" onclick="openInvoicePreview()">'+EYE_ICO+' View Invoice PDF</button>'
       +'<button class="btn btn-outline" onclick="downloadInvoice()">'+DL_ICO+' Download PDF</button>'
-      +'<button class="btn btn-outline" onclick="printBill()">'+PRN_ICO+' Print</button>';
+      +'<button class="btn btn-outline" onclick="printBill()">'+PRN_ICO+' Print</button>'
+      +'<button class="btn-danger" onclick="confirmDeleteBill()">&#128465; Delete Bill</button>';
   } else {
     html='<button class="btn btn-success btn-full" onclick="notifyWA()">'+WA_ICO+' Notify Customer &#128663;</button>'
       +'<button class="btn btn-blue" onclick="openInvoicePreview()">'+EYE_ICO+' View Bill PDF</button>'
       +'<button class="btn btn-outline" onclick="downloadInvoice()">'+DL_ICO+' Download PDF</button>'
       +'<button class="btn btn-outline" onclick="printBill()">'+PRN_ICO+' Print</button>'
       +'<button class="btn btn-primary" onclick="openPayModal()">'+PAY_ICO+' '+t('markPaid')+'</button>'
-      +'<button class="btn btn-outline" onclick="editCur()">'+EDT_ICO+' Edit Bill</button>';
+      +'<button class="btn btn-outline" onclick="editCur()">'+EDT_ICO+' Edit Bill</button>'
+      +'<button class="btn-danger" onclick="confirmDeleteBill()">&#128465; Delete Bill</button>';
   }
   acts.innerHTML=html;
   showScreen('screen-view');
@@ -2093,14 +2166,68 @@ function handleImport(e){
 // PWA INSTALL
 // ══════════════════════════════════════════
 var deferredInstall=null;
-window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredInstall=e; });
-window.addEventListener('appinstalled',function(){ deferredInstall=null; showToast('\u2705 App installed!',3000); });
+
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredInstall=e;
+  // Show the install banner
+  var bar=document.getElementById('install-bar');
+  if(bar) bar.style.display='flex';
+});
+
+window.addEventListener('appinstalled',function(){
+  deferredInstall=null;
+  hideInstallBar(true);
+  showToast('\u2705 App installed on Home Screen!',4000);
+});
+
+function triggerInstall(){
+  if(deferredInstall){
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(function(r){
+      if(r.outcome==='accepted'){
+        deferredInstall=null;
+        var bar=document.getElementById('install-bar');
+        if(bar) bar.style.display='none';
+      }
+    });
+  } else {
+    // Show manual guide
+    document.getElementById('install-modal').classList.add('show');
+  }
+}
+
+// Smart install banner: only show if not installed and not dismissed
+function shouldShowInstallBar(){
+  // Never show if running as installed PWA
+  if(window.matchMedia('(display-mode: standalone)').matches) return false;
+  if(window.navigator.standalone) return false;
+  // Never show if user dismissed it
+  if(localStorage.getItem('scc_install_dismissed')==='1') return false;
+  return true;
+}
+
+function hideInstallBar(dismiss){
+  var bar=document.getElementById('install-bar');
+  if(bar) bar.style.display='none';
+  if(dismiss) localStorage.setItem('scc_install_dismissed','1');
+}
+
+// Show banner only if appropriate
+if(shouldShowInstallBar()){
+  setTimeout(function(){
+    if(shouldShowInstallBar()){
+      var bar=document.getElementById('install-bar');
+      if(bar) bar.style.display='flex';
+    }
+  }, 1500);
+}
 
 // ══════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',function(){
-  renderChips(); renderDash(); applyLang(); setupInputs();
+  applyTheme(); renderChips(); renderDash(); applyLang(); setupInputs();
   setTimeout(refreshDriveStatus,100);
   // PWA manifest
   var m={name:'Siddhnath Car Care Billing',short_name:'SCC Billing',start_url:'./',display:'standalone',background_color:'#0b0d14',theme_color:'#f97316',icons:[{src:'LOGO_URI_PH',sizes:'192x192',type:'image/png'}]};
@@ -2108,6 +2235,69 @@ document.addEventListener('DOMContentLoaded',function(){
   if(mlink) mlink.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
 });
 
+
+// ══════════════════════════════════════════
+// THEME TOGGLE
+// ══════════════════════════════════════════
+function toggleTheme(){
+  var isLight=document.documentElement.getAttribute('data-theme')==='light';
+  var newTheme=isLight?'dark':'light';
+  document.documentElement.setAttribute('data-theme',newTheme);
+  localStorage.setItem('scc_theme',newTheme);
+  var btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent=newTheme==='light'?'🌙':'☀';
+}
+
+function applyTheme(){
+  var t=localStorage.getItem('scc_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  var btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent=t==='light'?'🌙':'☀';
+}
+
+// ══════════════════════════════════════════
+// DELETE BILL
+// ══════════════════════════════════════════
+function confirmDeleteBill(){
+  if(!cur) return;
+  var vno=cur.vehicleNo||'this bill';
+  if(!confirm('Delete bill for '+vno+'?\n\nThis cannot be undone.')) return;
+  var idx=bills.findIndex(function(b){return b.billId===cur.billId;});
+  if(idx<0){ showErr('Bill not found'); return; }
+  bills.splice(idx,1);
+  saveBills();
+  cur=null;
+  renderDash();
+  goHome();
+  showToast('\u2714 Bill deleted',3000);
+}
+
 </script>
+
+<!-- PWA Install Guide Modal -->
+<div class="install-modal" id="install-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="install-sheet">
+    <h3>📲 Add to Home Screen</h3>
+    <p>Follow these steps in Chrome to install the app:</p>
+    <div class="install-step">
+      <div class="install-step-num">1</div>
+      <div class="install-step-txt">Tap the <strong>⋮ menu</strong> button (3 dots) at the top-right of Chrome</div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num">2</div>
+      <div class="install-step-txt">Tap <strong>"Add to Home screen"</strong> from the menu</div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num">3</div>
+      <div class="install-step-txt">Tap <strong>"Add"</strong> on the popup — the app icon will appear on your home screen</div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num">4</div>
+      <div class="install-step-txt">Open the app from your home screen — it opens <strong>fullscreen</strong> without the browser bar!</div>
+    </div>
+    <button class="install-close-btn" onclick="document.getElementById('install-modal').classList.remove('show')">Got it ✓</button>
+  </div>
+</div>
+
 </body>
 </html>
