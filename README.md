@@ -17,3 +17,5 @@ A fully offline Progressive Web App (PWA) for managing car service bills.
 Open the link in Chrome on your phone and tap "Add to Home Screen" to install.
 
 Built for Siddhnath Car Care, Mhavashi, Patan, Maharashtra.
+
+https://ruturaj0404.github.io/scc-billing/
