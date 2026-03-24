@@ -1042,6 +1042,7 @@ function setupInputs(){
       vnoInput(vno.value); validateVno();
     });
     vno.addEventListener('focus', function(){ vnoInput(vno.value); });
+    vno.addEventListener('keydown', function(e){ acKeyNav('ac-vno',e); });
     vno.addEventListener('blur', function(){ setTimeout(function(){ closeAc('ac-vno'); validateVno(); },200); });
   }
   // Phone
@@ -1065,7 +1066,12 @@ function setupInputs(){
   }
   // Owner
   var own = document.getElementById('f-owner');
-  if(own){ own.addEventListener('blur', validateOwner); }
+  if(own){
+    own.addEventListener('blur', function(){ setTimeout(function(){closeAc('ac-owner');},200); validateOwner(); });
+    own.addEventListener('input', function(){ ownerInput(own.value); });
+    own.addEventListener('focus', function(){ ownerInput(own.value||''); });
+    own.addEventListener('keydown', function(e){ acKeyNav('ac-owner',e); });
+  }
   // Qty
   var qty = document.getElementById('f-qty');
   if(qty){
@@ -1093,13 +1099,15 @@ function setupInputs(){
   var mdl = document.getElementById('f-vmodel');
   if(mdl){
     mdl.addEventListener('input', function(){ modelInput(mdl.value); });
-    mdl.addEventListener('focus', function(){ modelInput(mdl.value); });
+    mdl.addEventListener('focus', function(){ modelInput(mdl.value||''); });
     mdl.addEventListener('blur', function(){ setTimeout(function(){closeAc('ac-vmodel');},200); });
+    mdl.addEventListener('keydown', function(e){ acKeyNav('ac-vmodel',e); });
   }
   // Item name
   var iname = document.getElementById('f-iname');
   if(iname){
     iname.addEventListener('input', function(){ itemNameInput(iname.value); setFldErr('f-iname','err-iname',null,false,false); });
+    iname.addEventListener('focus', function(){ itemNameInput(iname.value||''); });
     iname.addEventListener('blur', function(){ setTimeout(function(){closeAc('ac-iname');},200); });
     iname.addEventListener('keydown', function(e){ acKeyNav('ac-iname',e); });
   }
@@ -1189,19 +1197,20 @@ function showVhHistory(vno){
 
 function modelInput(val){
   var drop=document.getElementById('ac-vmodel');
-  if(!val||val.length<1){ closeAc('ac-vmodel'); return; }
+  if(!drop) return;
+  if(val===undefined||val===null) val='';
   var q=val.toLowerCase();
   var hist=[...new Set(bills.map(function(b){return b.vehicleModel;}).filter(Boolean))];
   var combined=[...new Set([...hist,...ALL_MODELS])];
   var sw=combined.filter(function(m){return m.toLowerCase().startsWith(q);});
   var cn=combined.filter(function(m){return !m.toLowerCase().startsWith(q)&&m.toLowerCase().includes(q);});
-  var matches=[...sw,...cn].slice(0,8);
+  var matches=val?[...sw,...cn].slice(0,8):combined.slice(0,8);
   if(!matches.length){ closeAc('ac-vmodel'); return; }
   drop.innerHTML='';
   matches.forEach(function(m){
     var item=document.createElement('div'); item.className='ac-item';
     var main=document.createElement('div'); main.className='ac-main';
-    main.innerHTML=m.replace(new RegExp('('+escRe(val)+')','gi'),'<strong>$1</strong>');
+    main.innerHTML=val?m.replace(new RegExp('('+escRe(val)+')','gi'),'<strong>$1</strong>'):m;
     item.appendChild(main);
     item.addEventListener('click',function(){ document.getElementById('f-vmodel').value=m; closeAc('ac-vmodel'); if(cur)cur.vehicleModel=m; });
     drop.appendChild(item);
@@ -1209,21 +1218,60 @@ function modelInput(val){
   drop.classList.add('open');
 }
 
+
+function ownerInput(val){
+  var drop=document.getElementById('ac-owner');
+  if(!drop) return;
+  if(val===undefined||val===null) val='';
+  var q=val.toLowerCase();
+  // Collect unique owner names from bills
+  var hist=[...new Set(bills.map(function(b){return b.ownerName;}).filter(Boolean))];
+  var sw=hist.filter(function(m){return m.toLowerCase().startsWith(q);});
+  var cn=hist.filter(function(m){return !m.toLowerCase().startsWith(q)&&m.toLowerCase().includes(q);});
+  var matches=val?[...sw,...cn].slice(0,8):hist.slice(0,8);
+  if(!matches.length){ closeAc('ac-owner'); return; }
+  drop.innerHTML='';
+  matches.forEach(function(m){
+    var item=document.createElement('div'); item.className='ac-item';
+    var main=document.createElement('div'); main.className='ac-main';
+    main.innerHTML=val?m.replace(new RegExp('('+escRe(val)+')','gi'),'<strong>$1</strong>'):m;
+    item.appendChild(main);
+    // Also show associated phone if available
+    var lastBill=bills.slice().reverse().find(function(b){return b.ownerName===m&&b.ownerPhone;});
+    if(lastBill&&lastBill.ownerPhone){
+      var sub=document.createElement('div'); sub.className='ac-sub';
+      sub.textContent='📞 '+lastBill.ownerPhone;
+      item.appendChild(sub);
+    }
+    item.addEventListener('click',function(){
+      document.getElementById('f-owner').value=m; closeAc('ac-owner'); validateOwner();
+      // Auto-fill phone if available
+      if(lastBill&&lastBill.ownerPhone){
+        var ph=document.getElementById('f-phone');
+        if(ph&&!ph.value) ph.value=lastBill.ownerPhone.replace(/\D/g,'');
+        validatePhone();
+      }
+    });
+    drop.appendChild(item);
+  });
+  drop.classList.add('open');
+}
 function itemNameInput(val){
   var drop=document.getElementById('ac-iname');
-  if(!val||val.length<1){ closeAc('ac-iname'); return; }
+  if(!drop) return;
+  if(val===undefined||val===null) val='';
   var q=val.toLowerCase();
   var hist=[...new Set(bills.flatMap(function(b){return (b.items||[]).map(function(i){return i.name;});}).filter(Boolean))];
   var combined=[...new Set([...hist,...ALL_PARTS])];
   var sw=combined.filter(function(m){return m.toLowerCase().startsWith(q);});
   var cn=combined.filter(function(m){return !m.toLowerCase().startsWith(q)&&m.toLowerCase().includes(q);});
-  var matches=[...sw,...cn].slice(0,10);
+  var matches=val?[...sw,...cn].slice(0,10):combined.slice(0,10);
   if(!matches.length){ closeAc('ac-iname'); return; }
   drop.innerHTML='';
   matches.forEach(function(m){
     var item=document.createElement('div'); item.className='ac-item';
     var main=document.createElement('div'); main.className='ac-main';
-    main.innerHTML=m.replace(new RegExp('('+escRe(val)+')','gi'),'<strong>$1</strong>');
+    main.innerHTML=val?m.replace(new RegExp('('+escRe(val)+')','gi'),'<strong>$1</strong>'):m;
     item.appendChild(main);
     item.addEventListener('click',function(){
       document.getElementById('f-iname').value=m; closeAc('ac-iname');
@@ -2607,7 +2655,9 @@ function saveUsers(u){ localStorage.setItem('scc_users',JSON.stringify(u)); }
 
 // ── Session persisted in localStorage (survives refresh) ──
 function isLoggedIn(){
-  return localStorage.getItem('scc_auth')==='1';
+  // Requires BOTH localStorage (user exists) AND sessionStorage (active session)
+  // sessionStorage is cleared when tab/browser closes, so this auto-logs out on close
+  return localStorage.getItem('scc_auth')==='1' && sessionStorage.getItem('scc_session')==='1';
 }
 
 function showApp(){
@@ -2649,6 +2699,7 @@ function doLogin(){
   if(users[u] && users[u]===p){
     localStorage.setItem('scc_auth','1');
     localStorage.setItem('scc_auth_user',u);
+    sessionStorage.setItem('scc_session','1');
     err.textContent='';
     showApp();
   } else {
@@ -2674,6 +2725,7 @@ function doSignup(){
   // Auto sign in after signup
   localStorage.setItem('scc_auth','1');
   localStorage.setItem('scc_auth_user',u);
+  sessionStorage.setItem('scc_session','1');
   err.textContent='';
   showApp();
   showToast('\u2705 Account created! Welcome, '+u+'!',3500);
@@ -2683,6 +2735,7 @@ function doLogout(){
   if(!confirm('Sign out of Siddhnath Car Care?')) return;
   localStorage.removeItem('scc_auth');
   localStorage.removeItem('scc_auth_user');
+  sessionStorage.removeItem('scc_session');
   showLogin();
 }
 
